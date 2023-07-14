@@ -1,5 +1,27 @@
 <html>
-<h1>
-Welcome to Best Cars dealership, home to the best cars in North America. We sell domestic and imported cars at reasonable prices.
-</h1>
+<head>
+    {% load static %}
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <!-- Navigation bar -->
+    <nav class="navbar navbar-light bg-light">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="{% url 'djangoapp:index' %}">Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page content -->
+    <div class="container-fluid">
+        <h2>Welcome to Best Cars dealership, <br>
+            home to the best cars in North America. <br>
+            We sell domestic and imported cars at reasonable prices.</h2>
+    </div>
+</body>
 </html>
