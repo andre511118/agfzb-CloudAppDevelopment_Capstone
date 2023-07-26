@@ -88,7 +88,7 @@ def analyze_review_sentiments(text):
     url = "https://api.eu-gb.natural-language-understanding.watson.cloud.ibm.com/instances/bfff7283-7baa-4638-88d6-761d50619008" 
     api_key = "sMbvHE7ObcPwKMhw-1EKJjG4pOzeDYQSvgyn0bZZl-q9" 
     authenticator = IAMAuthenticator(api_key) 
-    natural_language_understanding = NaturalLanguageUnderstandingV1(version='2021-08-01',authenticator=authenticator) 
+    natural_language_understanding = NaturalLanguageUnderstandingV1(version='2022-04-07',authenticator=authenticator) 
     natural_language_understanding.set_service_url(url) 
     response = natural_language_understanding.analyze( text=text+"hello hello hello",features=Features(sentiment=SentimentOptions(targets=[text+"hello hello hello"]))).get_result() 
     label=json.dumps(response, indent=2) 

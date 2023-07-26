@@ -3,7 +3,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render, redirect
 # from .models import related models
-
+from .models import CarDealer, CarMake, CarModel, DealerReview
 # from .restapis import related methods
 from .restapis import get_request, get_dealers_from_cf
 from .restapis import get_dealer_reviews_from_cf
@@ -103,7 +103,7 @@ def get_dealerships(request):
 # Create a `get_dealer_details` view to render the reviews of a dealer
 # def get_dealer_details(request, dealer_id):
 def get_dealer_details(request, dealer_id):
-        if request.method == "GET":
+    if request.method == "GET":
         context = {}
         dealer_url = "https://eu-de.functions.appdomain.cloud/api/v1/web/05e48284-5bc5-4a3a-8ec9-8f61b149b2e1/dealership-package/get-dealership"
         dealer = get_dealer_by_id_from_cf(dealer_url, id=id)
@@ -132,24 +132,24 @@ def add_review(request, dealer_id):
         if request.user.is_authenticated:
             username = request.user.username
             print(request.POST)
-            payload = dict()
+            review = dict()
             car_id = request.POST["car"]
             car = CarModel.objects.get(pk=car_id)
-            payload["time"] = datetime.utcnow().isoformat()
-            payload["name"] = username
-            payload["dealership"] = id
-            payload["id"] = id
-            payload["review"] = request.POST["content"]
-            payload["purchase"] = False
+            review["time"] = datetime.utcnow().isoformat()
+            review["name"] = username
+            review["dealership"] = id
+            review["id"] = id
+            review["review"] = request.POST["content"]
+            review["purchase"] = False
             if "purchasecheck" in request.POST:
                 if request.POST["purchasecheck"] == 'on':
-                    payload["purchase"] = True
-            payload["purchase_date"] = request.POST["purchasedate"]           
-            payload["car_model"] = car.name
-            new_payload = {}
-            new_payload["review"] = payload
-            review_post_url = "https://us-south.functions.appdomain.cloud/api/v1/web/CD0201-xxx-nodesample123_Tyler/dealership-package/post-review"
+                    review["purchase"] = True
+            review["purchase_date"] = request.POST["purchasedate"]           
+            review["car_model"] = car.name
+            payload = {}
+            payload["review"] = review
+            review_post_url = "https://eu-de.functions.appdomain.cloud/api/v1/web/05e48284-5bc5-4a3a-8ec9-8f61b149b2e1/dealership-package/post-review"
 
-            post_request(review_post_url, new_payload, id=id)
+            post_request(review_post_url, payload, id=id)
     return redirect("djangoapp:dealer_details", id=id)
 
