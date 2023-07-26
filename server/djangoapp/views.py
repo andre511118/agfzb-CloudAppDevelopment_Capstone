@@ -106,11 +106,11 @@ def get_dealer_details(request, dealer_id):
     if request.method == "GET":
         context = {}
         dealer_url = "https://eu-de.functions.appdomain.cloud/api/v1/web/05e48284-5bc5-4a3a-8ec9-8f61b149b2e1/dealership-package/get-dealership"
-        dealer = get_dealer_by_id_from_cf(dealer_url, id=id)
+        dealer = get_dealers_from_cf(dealer_url, id=id)
         context["dealer"] = dealer
     
         review_url = "https://eu-de.functions.appdomain.cloud/api/v1/web/05e48284-5bc5-4a3a-8ec9-8f61b149b2e1/dealership-package/get-review"
-        reviews = get_dealer_reviews_from_cf(review_url, id=id)
+        reviews = get_dealer_reviews_from_cf(review_url, dealerId=id)
         print(reviews)
         context["reviews"] = reviews
         
