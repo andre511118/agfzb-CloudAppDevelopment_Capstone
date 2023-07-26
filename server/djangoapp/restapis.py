@@ -1,7 +1,7 @@
 import requests
 import json
 # import related models here
-from .models import CarDealer
+from .models import CarDealer, DealerReview
 from requests.auth import HTTPBasicAuth
 
 
@@ -14,11 +14,11 @@ def get_request(url, **kwargs):
     try:
         if api_key:
             # Basic authentication GET
-            request.get(url, params=kwargs, headers={'Content-Type': 'application/json'},
+            response = request.get(url, params=kwargs, headers={'Content-Type': 'application/json'},
                                         auth=HTTPBasicAuth('apikey', api_key))
         else:
             # no authentication GET
-            request.get(url, params=kwargs)
+            response = request.get(url, params=kwargs)
     except:
         # If any error occurs
         print("Network exception occurred")
@@ -30,7 +30,8 @@ def get_request(url, **kwargs):
 
 # Create a `post_request` to make HTTP POST requests
 # e.g., response = requests.post(url, params=kwargs, json=payload)
-
+def post_request(url,json_payload,**kwargs):
+    response = requests.post(url, params=kwargs, json=payload)
 
 # Create a get_dealers_from_cf method to get dealers from a cloud function
 # def get_dealers_from_cf(url, **kwargs):
