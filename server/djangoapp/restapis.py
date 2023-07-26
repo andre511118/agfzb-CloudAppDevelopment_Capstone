@@ -9,23 +9,32 @@ from requests.auth import HTTPBasicAuth
 # e.g., response = requests.get(url, params=params, headers={'Content-Type': 'application/json'},
 #                                     auth=HTTPBasicAuth('apikey', api_key))
 def get_request(url, **kwargs):
-    print(kwargs)
-    print("GET from {} ".format(url))    
+    
+    # If argument contain API KEY
+    api_key = kwargs.get("api_key")
+    print("GET from {} ".format(url))
     try:
         if api_key:
-            # Basic authentication GET
-            response = request.get(url, params=kwargs, headers={'Content-Type': 'application/json'},
-                                        auth=HTTPBasicAuth('apikey', api_key))
+            params = dict()
+            params["text"] = kwargs["text"]
+            params["version"] = kwargs["version"]
+            params["features"] = kwargs["features"]
+            params["return_analyzed_text"] = kwargs["return_analyzed_text"]
+            response = requests.get(url, params=params, headers={'Content-Type': 'application/json'},
+                                    auth=HTTPBasicAuth('apikey', api_key))
         else:
-            # no authentication GET
-            response = request.get(url, params=kwargs)
+            # Call get method of requests library with URL and parameters
+            response = requests.get(url, headers={'Content-Type': 'application/json'},
+                                    params=kwargs)
     except:
         # If any error occurs
         print("Network exception occurred")
+
     status_code = response.status_code
     print("With status {} ".format(status_code))
     json_data = json.loads(response.text)
     return json_data
+
 
 
 # Create a `post_request` to make HTTP POST requests
@@ -52,7 +61,7 @@ def get_dealers_from_cf(url, **kwargs):
         json_result = get_request(url)
     if json_result:
         # Get the row list in JSON as dealers
-        dealers = json_result["rows"]
+        dealers = json_result
         # For each dealer object
         for dealer in dealers:
             # Get its content in `doc` object
@@ -73,7 +82,7 @@ def get_dealer_reviews_from_cf(url, dealerId):
     # Call get_request with dealerId as a parameter
     json_result = get_request(url, dealerId=dealerId)
     if json_result:
-        reviews = json_result["entries"]
+        reviews = json_result
         for review in reviews:
             review_obj = DealerReview(dealerId=review["dealerId"], review=review["review"], sentiment="")  # Create a DealerReview object
             review_obj.sentiment = analyze_review_sentiments(review_obj.review)
