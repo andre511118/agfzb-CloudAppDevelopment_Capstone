@@ -14,14 +14,10 @@ from datetime import datetime
 import logging
 import json
 
-
 # Get an instance of a logger
 logger = logging.getLogger(__name__)
 
-
 # Create your views here.
-
-
 # Create an `about` view to render a static about page
 def about(request):
     return render(request, 'djangoapp/about.html')
@@ -85,7 +81,7 @@ def get_dealerships(request):
 
         state = request.GET.get("st")
         dealerId = request.GET.get("dealerId")
-        url = "https://us-south.functions.appdomain.cloud/api/v1/web/7ccc880f-504c-4f24-a816-b01352454616/dealership-package/get-dealership"
+        url = "https://eu-de.functions.appdomain.cloud/api/v1/web/05e48284-5bc5-4a3a-8ec9-8f61b149b2e1/dealership-package/get-dealership"
 
         try:
             if state:
@@ -107,12 +103,18 @@ def get_dealerships(request):
 # Create a `get_dealer_details` view to render the reviews of a dealer
 # def get_dealer_details(request, dealer_id):
 def get_dealer_details(request, dealer_id):
-    context = {}
-    url = f"your-cloud-function-domain/reviews/dealer-get"
-    # Get reviews for the specified dealer_id from the URL
-    reviews = get_dealer_reviews_from_cf(url, dealer_id)
-    context['reviews'] = reviews
-    return render(request, 'djangoapp/dealer_details.html', context)
+        if request.method == "GET":
+        context = {}
+        dealer_url = "https://eu-de.functions.appdomain.cloud/api/v1/web/05e48284-5bc5-4a3a-8ec9-8f61b149b2e1/dealership-package/get-dealership"
+        dealer = get_dealer_by_id_from_cf(dealer_url, id=id)
+        context["dealer"] = dealer
+    
+        review_url = "https://eu-de.functions.appdomain.cloud/api/v1/web/05e48284-5bc5-4a3a-8ec9-8f61b149b2e1/dealership-package/get-review"
+        reviews = get_dealer_reviews_from_cf(review_url, id=id)
+        print(reviews)
+        context["reviews"] = reviews
+        
+        return render(request, 'djangoapp/dealer_details.html', context)
 
 # Create a `add_review` view to submit a review
 # def add_review(request, dealer_id):
@@ -120,19 +122,34 @@ def get_dealer_details(request, dealer_id):
 def add_review(request, dealer_id):
     if request.method == "GET":
         # Retrieve the dealer for which we are adding a review (You can customize this based on your models)
-        dealer = get_object_or_404(CarDealer, id=dealer_id)
-        context = {'dealer': dealer}
+        context = {}
+        dealer_url = "https://eu-de.functions.appdomain.cloud/api/v1/web/05e48284-5bc5-4a3a-8ec9-8f61b149b2e1/dealership-package/get-dealership"
+        dealer = get_dealer_by_id_from_cf(dealer_url, id=id)
+        context["dealer"] = dealer
         return render(request, 'djangoapp/add_review.html', context)
 
-
     elif request.method == "POST":
-        # Get the submitted review data from the form
-        review_text = request.POST['review']
-        # You may also want to add a sentiment analysis here and store it in the DealerReview model
+        if request.user.is_authenticated:
+            username = request.user.username
+            print(request.POST)
+            payload = dict()
+            car_id = request.POST["car"]
+            car = CarModel.objects.get(pk=car_id)
+            payload["time"] = datetime.utcnow().isoformat()
+            payload["name"] = username
+            payload["dealership"] = id
+            payload["id"] = id
+            payload["review"] = request.POST["content"]
+            payload["purchase"] = False
+            if "purchasecheck" in request.POST:
+                if request.POST["purchasecheck"] == 'on':
+                    payload["purchase"] = True
+            payload["purchase_date"] = request.POST["purchasedate"]           
+            payload["car_model"] = car.name
+            new_payload = {}
+            new_payload["review"] = payload
+            review_post_url = "https://us-south.functions.appdomain.cloud/api/v1/web/CD0201-xxx-nodesample123_Tyler/dealership-package/post-review"
 
-        # Save the review in the database
-        review = DealerReview(dealerId=dealer_id, review=review_text)
-        review.save()
-
-        return redirect('djangoapp:index')
+            post_request(review_post_url, new_payload, id=id)
+    return redirect("djangoapp:dealer_details", id=id)
 
