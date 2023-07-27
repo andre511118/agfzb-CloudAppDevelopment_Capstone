@@ -15,12 +15,7 @@ def get_request(url, **kwargs):
     print("GET from {} ".format(url))
     try:
         if api_key:
-            params = dict()
-            params["text"] = kwargs["text"]
-            params["version"] = kwargs["version"]
-            params["features"] = kwargs["features"]
-            params["return_analyzed_text"] = kwargs["return_analyzed_text"]
-            response = requests.get(url, params=params, headers={'Content-Type': 'application/json'},
+            response = requests.get(url, params=kwargs, headers={'Content-Type': 'application/json'},
                                     auth=HTTPBasicAuth('apikey', api_key))
         else:
             # Call get method of requests library with URL and parameters
@@ -81,10 +76,11 @@ def get_dealer_reviews_from_cf(url, dealerId):
     results = []
     # Call get_request with dealerId as a parameter
     json_result = get_request(url, dealerId=dealerId)
+    print(json_result)
     if json_result:
-        reviews = json_result
+        reviews = json_result['docs']
         for review in reviews:
-            review_obj = DealerReview(dealerId=review["dealerId"], review=review["review"], sentiment="")  # Create a DealerReview object
+            review_obj = DealerReview(id=review["dealerId"], review=review["review"], sentiment="")  # Create a DealerReview object
             review_obj.sentiment = analyze_review_sentiments(review_obj.review)
             results.append(review_obj)
     return results

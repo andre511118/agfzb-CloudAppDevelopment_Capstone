@@ -106,11 +106,11 @@ def get_dealer_details(request, dealer_id):
     if request.method == "GET":
         context = {}
         dealer_url = "https://eu-de.functions.appdomain.cloud/api/v1/web/05e48284-5bc5-4a3a-8ec9-8f61b149b2e1/dealership-package/get-dealership"
-        dealer = get_dealers_from_cf(dealer_url, id=id)
+        dealer = get_dealers_from_cf(dealer_url, dealerId=dealer_id)
         context["dealer"] = dealer
     
         review_url = "https://eu-de.functions.appdomain.cloud/api/v1/web/05e48284-5bc5-4a3a-8ec9-8f61b149b2e1/dealership-package/get-review"
-        reviews = get_dealer_reviews_from_cf(review_url, dealerId=id)
+        reviews = get_dealer_reviews_from_cf(review_url, dealerId=dealer_id)
         print(reviews)
         context["reviews"] = reviews
         
@@ -124,7 +124,7 @@ def add_review(request, dealer_id):
         # Retrieve the dealer for which we are adding a review (You can customize this based on your models)
         context = {}
         dealer_url = "https://eu-de.functions.appdomain.cloud/api/v1/web/05e48284-5bc5-4a3a-8ec9-8f61b149b2e1/dealership-package/get-dealership"
-        dealer = get_dealer_by_id_from_cf(dealer_url, id=id)
+        dealer = get_dealer_reviews_from_cf(dealer_url, dealer_id=dealer_id)
         context["dealer"] = dealer
         return render(request, 'djangoapp/add_review.html', context)
 
@@ -137,8 +137,8 @@ def add_review(request, dealer_id):
             car = CarModel.objects.get(pk=car_id)
             review["time"] = datetime.utcnow().isoformat()
             review["name"] = username
-            review["dealership"] = id
-            review["id"] = id
+            review["dealership"] = dealer_id
+            review["id"] = dealer_id
             review["review"] = request.POST["content"]
             review["purchase"] = False
             if "purchasecheck" in request.POST:
@@ -150,6 +150,6 @@ def add_review(request, dealer_id):
             payload["review"] = review
             review_post_url = "https://eu-de.functions.appdomain.cloud/api/v1/web/05e48284-5bc5-4a3a-8ec9-8f61b149b2e1/dealership-package/post-review"
 
-            post_request(review_post_url, payload, id=id)
-    return redirect("djangoapp:dealer_details", id=id)
+            post_request(review_post_url, payload, id=dealer_id)
+    return redirect("djangoapp:dealer_details", id=dealer_id)
 
