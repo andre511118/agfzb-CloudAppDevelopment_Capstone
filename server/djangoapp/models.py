@@ -10,13 +10,14 @@ from django.utils.timezone import now
 # - Any other fields you would like to include in car make model
 # - __str__ method to print a car make object
 class CarMake(models.Model):
-    name = models.CharField(max_length=100)
-    description = models.TextField()
-    # Add any other fields you need for the Car Make model
-
+    # - Name
+    name = models.CharField(null=False, max_length=50)
+    # - Description
+    description = models.CharField(null=True, max_length=500)
+    # - Any other fields you would like to include in car make model
+    # - __str__ method to print a car make object
     def __str__(self):
-        return "Name: " + self.name + "," + \
-               "Description: " + self.description
+        return self.name
 
 
 # <HINT> Create a Car Model model `class CarModel(models.Model):`:

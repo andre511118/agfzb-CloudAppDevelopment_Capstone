@@ -36,7 +36,7 @@ def get_request(url, **kwargs):
 
 # Create a `post_request` to make HTTP POST requests
 # e.g., response = requests.post(url, params=kwargs, json=payload)
-def post_request(url,json_payload,**kwargs):
+def post_request(url, payload, **kwargs):
     print(kwargs)
     print("POST to {} ".format(url))
     print(payload)
@@ -70,7 +70,7 @@ def get_dealers_from_cf(url, **kwargs):
                                    st=dealer_doc["st"], zip=dealer_doc["zip"])
             results.append(dealer_obj)
     return results
-    
+
 def get_dealer_by_id_from_cf(url, id):
     json_result = get_request(url, id=id)
     print('json_result from line 54',json_result)
