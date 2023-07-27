@@ -3,7 +3,9 @@ import json
 # import related models here
 from .models import CarDealer, DealerReview
 from requests.auth import HTTPBasicAuth
-
+from ibm_watson import NaturalLanguageUnderstandingV1
+from ibm_cloud_sdk_core.authenticators import IAMAuthenticator
+from ibm_watson.natural_language_understanding_v1 import Features, EntitiesOptions, KeywordsOptions, SentimentOptions
 
 # Create a `get_request` to make HTTP GET requests
 # e.g., response = requests.get(url, params=params, headers={'Content-Type': 'application/json'},
@@ -80,7 +82,7 @@ def get_dealer_reviews_from_cf(url, dealerId):
     if json_result:
         reviews = json_result['docs']
         for review in reviews:
-            review_obj = DealerReview(id=review["dealerId"], review=review["review"], sentiment="")  # Create a DealerReview object
+            review_obj = DealerReview(id=review["id"], review=review["review"], sentiment="", dealership=review["dealership"],name=review['name'],purchase=review['purchase'],purchase_date=review['purchase_date'],car_make = review['car_make'],car_model=review['car_model'],car_year=review['car_year'])  # Create a DealerReview object
             review_obj.sentiment = analyze_review_sentiments(review_obj.review)
             results.append(review_obj)
     return results
