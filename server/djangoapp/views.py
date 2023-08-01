@@ -79,14 +79,14 @@ def get_dealerships(request):
         context = {}
 
         state = request.GET.get("st")
-        dealerId = request.GET.get("dealerId")
+        dealerId = request.GET.get("id")
         url = "https://eu-de.functions.appdomain.cloud/api/v1/web/05e48284-5bc5-4a3a-8ec9-8f61b149b2e1/dealership-package/get-dealership"
 
         try:
             if state:
                 dealerships = get_dealers_from_cf(url, st=state)
             elif dealerId:
-                dealerships = get_dealers_from_cf(url, dealerId=dealerId)
+                dealerships = get_dealer_by_id_from_cf(url, id=dealerId)
             else:
                 dealerships = get_dealers_from_cf(url)
         except Exception as e:
@@ -105,11 +105,11 @@ def get_dealer_details(request, dealer_id):
     if request.method == "GET":
         context = {}
         dealer_url = "https://eu-de.functions.appdomain.cloud/api/v1/web/05e48284-5bc5-4a3a-8ec9-8f61b149b2e1/dealership-package/get-dealership"
-        dealer = dealer = get_dealer_by_id_from_cf(dealer_url, id=dealer_id)
+        dealer = get_dealer_by_id_from_cf(dealer_url, id=dealer_id)
         context["dealer"] = dealer
     
         review_url = "https://eu-de.functions.appdomain.cloud/api/v1/web/05e48284-5bc5-4a3a-8ec9-8f61b149b2e1/dealership-package/get-review"
-        reviews = get_dealer_reviews_from_cf(review_url, dealerId=dealer_id)
+        reviews = get_dealer_reviews_from_cf(review_url, id=dealer_id)
         print(reviews)
         context["reviews"] = reviews
         
@@ -151,8 +151,8 @@ def add_review(request, id):
             payload["car_model"] = car.name
             payload["car_year"] = int(car.year.strftime("%Y"))
 
-            new_payload = {}
-            new_payload["review"] = payload
+            new_payload ={}
+            new_payload['review'] = payload
             review_post_url = "https://eu-de.functions.appdomain.cloud/api/v1/web/05e48284-5bc5-4a3a-8ec9-8f61b149b2e1/dealership-package/post-review"
-            post_request(review_post_url, new_payload, id=id)
-        return redirect("djangoapp:dealer_details", id=id)
+            post_request(review_post_url, new_payload,id=id)
+        return redirect("djangoapp:dealer_details", dealer_id=id)
